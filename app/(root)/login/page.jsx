@@ -4,16 +4,31 @@ import { useState } from "react";
 import { Button } from "@/components/button";
 import { Input } from "@/components/input";
 import {  Mail, Lock } from "lucide-react";
+import { useRouter } from 'next/navigation';
+export default function Login() {
+    const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-export default function Home() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const handleLogin = async () => {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle login logic here
+    const data = await res.json();
+
+    if (data.success) {
+      router.push('/signup'); // Redirect if login is successful
+    } else {
+      setError(data.error || 'Login failed');
+    }
+    console.log("Login clicked!", email, password);
   };
+
+
 
   return (
     <main className="min-h-screen relative">
@@ -36,7 +51,7 @@ export default function Home() {
             <p className="text-gray-200">Start your next adventure</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+          <form  className="mt-8 space-y-6">
             <div className="space-y-4">
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -66,12 +81,14 @@ export default function Home() {
 
 
             <Button
-              type="submit"
+            onClick={handleLogin}
+              type="button"
               className="w-full bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg transition-all duration-200"
             >
               Sign in
             </Button>
 
+      {error && <p className="text-red-500 mt-2">{error}</p>}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-white/20"></div>
