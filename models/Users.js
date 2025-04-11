@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-  username: String,
+  username: { type: String, required: true },
   email: { type: String, unique: true },
-  password: String, // hashed
+  password: { type: String, required: true }, // hashed
   role: { type: String, enum: ['Owner', 'Admin', 'Member', 'Viewer'], default: 'Member' },
   createdAt: { type: Date, default: Date.now }
 });
