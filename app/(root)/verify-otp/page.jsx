@@ -2,7 +2,7 @@
 import dynamic from 'next/dynamic';
 import { Suspense } from 'react';
 
-const VerifyOtp = dynamic(() => import('./VerifyOtp'), { ssr: false });
+const VerifyOtp = dynamic(() => import('./VerifyOtp.js'), { ssr: false });
 
 export default function VerifyOtpPage() {
   return (

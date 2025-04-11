@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-export default function VerifyOtpForm() {
+export default function VerifyOtp() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const email = searchParams.get('email');
