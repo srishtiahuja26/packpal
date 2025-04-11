@@ -32,8 +32,9 @@ export default function Password() {
 
     const data = await res.json()
     if (data.success) {
-      alert("Account created successfully!")
-      router.push("/dashboard")
+      alert('Account created successfully!');
+      localStorage.setItem('user', JSON.stringify(data.user));
+      router.push('/dashboard');
     } else {
       alert(data.message || "Failed to create account.")
     }

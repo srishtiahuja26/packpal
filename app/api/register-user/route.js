@@ -11,15 +11,17 @@ export async function POST(req) {
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return NextResponse.json({ success: false, message: 'User already exists' });
+    //   return NextResponse.json({ success: false, message: 'User already exists' });
+   
+    return NextResponse.json({ success: true,user: existingUser });
     }
 
     // Save to DB
     const newUser = new User({ email, username, password });
-    console.log(newUser) // You can hash password here
+     // You can hash password here
     await newUser.save();
-
-    return NextResponse.json({ success: true });
+     // Store user in local storage (optional)
+    return NextResponse.json({ success: true,user: newUser });
   } catch (error) {
     console.error('Register Error:', error);
     return NextResponse.json({ success: false, message: 'Something went wrong' });

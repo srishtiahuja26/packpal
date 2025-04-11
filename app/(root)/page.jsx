@@ -2,10 +2,10 @@
 
 import { ArrowRight, Mountain, Menu, X } from 'lucide-react';
 import { useState } from 'react';
-
+import {  useRouter } from "next/navigation"
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const router = useRouter()
   return (
     <main className="relative min-h-screen">
       {/* Navigation */}
@@ -23,10 +23,10 @@ export default function Home() {
                 {/* <a href="#" className="text-white hover:text-gray-200">Destinations</a>
                 <a href="#" className="text-white hover:text-gray-200">About</a>
                 <a href="#" className="text-white hover:text-gray-200">Community</a> */}
-                <button className="px-6 py-2 bg-white text-black rounded-full font-semibold hover:bg-opacity-90 transition-all">
+                <button className="px-6 py-2 bg-white text-black rounded-full font-semibold hover:bg-opacity-90 transition-all cursor-pointer" onClick={()=>router.push('/signup')}>
                   Sign Up
                 </button>
-                <button className="px-6 py-2 bg-white text-black rounded-full font-semibold hover:bg-opacity-90 transition-all">
+                <button className="px-6 py-2 bg-white text-black rounded-full font-semibold hover:bg-opacity-90 transition-all cursor-pointer" onClick={()=>router.push('/login')}>
                   Login
                 </button>
               </div>
