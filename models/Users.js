@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-  name: String,
+  username: String,
   email: { type: String, unique: true },
   password: String, // hashed
   role: { type: String, enum: ['Owner', 'Admin', 'Member', 'Viewer'], default: 'Member' },
