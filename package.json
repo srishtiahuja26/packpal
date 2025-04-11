@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@sendgrid/client": "^8.1.5",
+    "@sendgrid/mail": "^8.1.5",
     "mongoose": "^8.13.2",
     "next": "15.3.0",
     "react": "^19.0.0",
@@ -16,6 +18,9 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4"
+    "@types/node": "22.14.0",
+    "@types/react": "19.1.1",
+    "tailwindcss": "^4",
+    "typescript": "5.8.3"
   }
 }

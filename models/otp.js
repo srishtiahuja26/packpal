@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
-const { Schema } = mongoose;
 
-const OtpSchema = new Schema(
+const OtpSchema = new mongoose.Schema(
   
   {
     otp: { type: Number },
@@ -9,11 +8,11 @@ const OtpSchema = new Schema(
   },
  
   {
-    collection: "otps",
+    collection: "Otp",
     timestamps: { createdAt: true, updatedAt: true },
   }
 );
 
-const Otp = mongoose.model("otps", OtpSchema);
+const Otp = mongoose.models.Otp || mongoose.model('Otp', OtpSchema);
 
 export default Otp;
