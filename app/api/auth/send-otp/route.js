@@ -3,7 +3,7 @@ import { sendEmail } from '@/utils/helper';
 import dbConnect from '@/lib/dbConnect';
 import Otp from '@/models/Otp';
 
-export async function POST(req: Request) {
+export async function POST(req) {
   const { email } = await req.json();
 
   if (!email) return NextResponse.json({ error: 'Email is required' }, { status: 400 });
@@ -17,9 +17,12 @@ export async function POST(req: Request) {
     }
 
   try {
-    const VERIFICATION_CODE_TEMPLATE = process.env.VERIFICATION_CODE_TEMPLATE!;
+    console.log('doneee')
+    const VERIFICATION_CODE_TEMPLATE = process.env.VERIFICATION_CODE_TEMPLATE;
+    if (!VERIFICATION_CODE_TEMPLATE) {
+      throw new Error('VERIFICATION_CODE_TEMPLATE is not defined in the environment variables');
+    }
     await sendEmail(email, VERIFICATION_CODE_TEMPLATE, { otp });
-
     await new Otp({ email, otp }).save();
 
     return NextResponse.json({ success: true, otp });
