@@ -24,7 +24,7 @@ export default function SignUp() {
 
       // Proceed to OTP verification page
       alert("Successsss! OTP sent to your email. Please check your inbox.");
-      router.push(`/verify-otp?email=${encodeURIComponent(email)}`);
+      router.push(`/verifyotp?email=${encodeURIComponent(email)}`);
     } catch (err) {
       console.error('Error:', err.message);
       alert(err.message);
