@@ -9,7 +9,7 @@ export default function ItemsPage() {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => {
     setIsModalOpen(false);
-    setItems([{ itemName: "", user: "", role: "" }]); // Reset form
+    setItems([{ itemName: "", user: "", role: "" }]); // Reset to initial state
   };
 
   const handleAddItems = () => {
@@ -17,18 +17,16 @@ export default function ItemsPage() {
   };
 
   const handleInputChange = (index, field, value) => {
-    const updatedItems = [...items];
-    updatedItems[index][field] = value;
-    setItems(updatedItems);
+    const newItems = [...items];
+    newItems[index][field] = value;
+    setItems(newItems);
   };
 
   const handleSubmit = () => {
-    const validItems = items.filter(
-      (item) => item.itemName && item.user && item.role
-    );
+    const validItems = items.filter((item) => item.itemName && item.user && item.role);
     if (validItems.length === items.length) {
       alert(`Items added: ${JSON.stringify(validItems)}`);
-      // Add logic here (API etc.)
+      // Handle submission logic here
       closeModal();
     } else {
       alert("Please fill in all fields");
@@ -45,7 +43,7 @@ export default function ItemsPage() {
       }}
     >
       {/* Dashboard */}
-      <div className="bg-white p-6 rounded-lg shadow-lg z-10">
+      <div className="bg-white p-6 rounded-lg shadow-lg">
         <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
         <button
           onClick={openModal}
@@ -64,29 +62,30 @@ export default function ItemsPage() {
       {/* Modal */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"
+          className="fixed inset-0 z-50 backdrop-blur-sm"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.3)" }}
           onClick={closeModal}
         >
           <div
-            className="relative bg-white p-6 rounded-lg shadow-lg w-[400px]"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-xl w-[400px]"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close X */}
+            {/* Cross Button */}
             <button
               onClick={closeModal}
-              className="absolute top-2 right-3 text-gray-500 text-2xl hover:text-red-500"
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl font-bold"
             >
-              &times;
+              ✕
             </button>
 
             <h2 className="text-xl font-bold mb-4">Add Items</h2>
 
-            {/* Dynamic Fields */}
+            {/* Dynamic Rows */}
             {items.map((item, index) => (
               <div key={index} className="space-y-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Item Name
+                    Name (Item)
                   </label>
                   <input
                     type="text"
@@ -98,7 +97,6 @@ export default function ItemsPage() {
                     placeholder="Enter item name"
                   />
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Select User
@@ -117,10 +115,9 @@ export default function ItemsPage() {
                     <option value="D">D</option>
                   </select>
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    User Role
+                    Select Role
                   </label>
                   <select
                     value={item.role}
@@ -139,21 +136,21 @@ export default function ItemsPage() {
               </div>
             ))}
 
-            {/* Add Row */}
-            <button
-              onClick={handleAddItems}
-              className="bg-teal-500 text-white px-4 py-2 rounded-md mb-4"
-            >
-              Add Items
-            </button>
-
-            {/* Submit */}
-            <button
-              onClick={handleSubmit}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md"
-            >
-              Submit
-            </button>
+            {/* Add & Submit Buttons */}
+            <div className="flex gap-2">
+              <button
+                onClick={handleAddItems}
+                className="bg-[#3B82F6] text-white px-4 py-2 rounded-md"
+              >
+                Add Item
+              </button>
+              <button
+                onClick={handleSubmit}
+                className="bg-[#2E8B57] text-white px-4 py-2 rounded-md"
+              >
+                Submit
+              </button>
+            </div>
           </div>
         </div>
       )}
