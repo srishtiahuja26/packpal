@@ -21,7 +21,7 @@ export default function Login() {
     const data = await res.json();
 
     if (data.success) {
-      router.push('/signup'); // Redirect if login is successful
+      router.push('/dashboard'); // Redirect if login is successful
     } else {
       setError(data.error || 'Login failed');
     }
