@@ -13,7 +13,7 @@ export default function CreateTrip() {
   const [categoryOpen, setCategoryOpen] = useState(false)
   const [selectedType, setSelectedType] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("")
-  const typeOptions = ["a", "b", "c", "d", "f"]
+  const typeOptions = ["camping", "beach", "pilgrims"," hiking", "road trip", "cruise"]
   const categoryOptions = ["Trip", "Event"]
 
   // Update end date when start date changes
