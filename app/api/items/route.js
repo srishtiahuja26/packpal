@@ -10,7 +10,7 @@ export async function POST(req) {
   const { name, category, assignedTo, userRole, tripId } = await req.json(); // Use req.body instead of req.json()
 
   // Validate fields
-  if (!name || !category || !assignedTo || !userRole || !tripId) {
+  if (!name || !category ||  !tripId) {
     return NextResponse.json({ message: "All fields are required" });
   }
   if (!mongoose.isValidObjectId(tripId)) {
@@ -24,27 +24,27 @@ export async function POST(req) {
     const newItem = await Items.create({
       name,
       category,
-      assignedTo,
-      userRole,
+      assignedTo: assignedTo ? assignedTo : null,
+      userRole : userRole ? userRole : "Member",
       tripId,
     });
 
-    await newItem.save();
     
-    await Trips.findOneAndUpdate(
-      { _id: new mongoose.Types.ObjectId(tripId) },
+    const response = await Trips.updateOne(
+      { _id: tripId },
       {
         $addToSet: {
           items: newItem._id,
-          members: { user: new mongoose.Types.ObjectId(assignedTo), role: userRole },
+          members: { user: assignedTo ? assignedTo : null, role: userRole ? userRole : "Member" },
         },
-        // Initialize members as an array if it’s null or undefined
-        // $setOnInsert: { members: [] },
       },
-      { upsert: true, new: true } // Upsert ensures the document exists; new returns updated doc
+      { upsert: true }
     );
+    console.log("Updated trip with new item:", response);
+    await newItem.save();
+    // await response.save();
     // Return success response
-    return NextResponse.json({ success: true, data: newItem });
+    return NextResponse.json({ success: true, data: newItem ,response});
   } catch (err) {
     console.error(err);
     return NextResponse.json({

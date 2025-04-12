@@ -87,26 +87,103 @@ export default function CreateTrip() {
     }
   };
 
-  const handleAIGenerate = async () => {
-    // const res = await fetch('/api/ai/generate-packing-list', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //   startDate,
-    //   endDate,
-    //   destination,
-    //   selectedType,
-    //   selectedCategory,
-    //   }),
-    // });
+  const handleAIGenerate = async (e) => {
+
+
+    e.preventDefault();
   
-    // const data = await res.json();
-    // if (data.success) {
-    //   console.log('AI Suggestions:', data);
-    //   // setSuggestedItems(data.items);
-    // } else {
-    //   alert('Failed to generate list');
-    // }
+    // Get user ID from localStorage
+    const userData = JSON.parse(localStorage.getItem("user"));
+    const userId = userData?._id;
+  
+    if (!userId) {
+      alert("User not found. Please log in again.");
+      return;
+    }
+  
+    const newTrip = {
+      name : tripName,
+        startDate: startDate,
+        endDate: endDate,
+        owner: userId,
+        members: [],
+      destination :destination,
+      type: selectedType,
+      category: selectedCategory,
+    };
+  
+    try {
+      const res = await fetch("/api/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newTrip),
+      });
+      const data = await res.json();
+      if (res.status && data.success) {
+        alert("Trip created successfully!");
+        console.log(data);
+        // router.push(`/dashboard/${data.trip._id}`);
+        const response = await fetch("/api/geminiChecklist", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            destination: destination,
+            type: selectedType,
+            category: selectedCategory,
+            startDate: startDate,
+            endDate: endDate,
+          }),
+        });
+    
+        const data1 = await response.json();
+        let checklist = data1.checklist;
+        console.log(checklist);
+        if (typeof checklist === "string") {
+          try {
+            checklist = JSON.parse(checklist);
+          } catch (e) {
+            console.error("Failed to parse checklist:", e);
+            alert("Checklist format error.");
+            return;
+          }
+        }
+        for (const category in checklist) {
+          const itemsArray = checklist[category];
+  
+          for (const itemName of itemsArray) {
+            const itemData = {
+              name: itemName,
+              category: category,
+              tripId: data.trip._id,
+              status: "to pack",
+              assignedTo: "",
+              // userRole: "",
+            };
+  
+            const res = await fetch("/api/items", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(itemData),
+            });
+            var dummy = await res.json();
+            console.log(dummy);
+          }
+        }
+        console.log("All AI-generated items saved to DB.");
+        router.push(`/dashboard/${data.trip._id}`);
+      } else {
+        alert("Failed to create trip.");
+      }
+
+      
+    } catch (error) {
+      console.error("Error creating trip:", error);
+    }
+    
   }
 
   return (

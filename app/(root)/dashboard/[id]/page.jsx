@@ -347,14 +347,14 @@ export default function TripDashboard() {
                     </td>
                     <td className="p-2 text-center">
                       <div className="flex justify-center gap-2">
-                      {(tripDe.owner == currentUser) && (
+                      {/* {(tripDe.owner == currentUser) && (
                         <button
                           onClick={() => editTask(index)}
                           className="text-blue-500"
                         >
                           <Pencil size={18} />
                         </button>
-                        )}
+                        )} */}
                         {(tripDe.owner == currentUser) && (
                         <button
                           onClick={() => deleteTask(index)}
