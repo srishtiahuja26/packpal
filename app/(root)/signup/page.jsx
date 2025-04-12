@@ -32,32 +32,30 @@ export default function SignUp() {
   };
 
   return (
-    <div
-      className="flex items-center justify-center min-h-screen bg-gray-100"
-      style={{
-        backgroundImage: `url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      <form onSubmit={handleSubmit} className="bg-[#123458] p-6 rounded-2xl shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4 text-center text-white">Sign Up</h2>
+    <div className="flex items-center justify-center min-h-screen bg-[#2F373D]">
+      <form
+        onSubmit={handleSubmit}
+        className="p-8 rounded-2xl shadow-lg w-full max-w-lg transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] hover:-translate-y-1 animate-slide-up bg-[#4E545C]"
+      >
+        <h2 className="text-3xl font-bold mb-6 text-center text-white">Sign Up</h2>
         
-        <label className="block mb-2 text-sm font-medium text-white">
-          Email Address
-        </label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:grey-400"
-          placeholder="you@example.com"
-          required
-        />
+        <div className="relative mb-6 group">
+          <label className="block mb-2 text-base font-medium text-white transition-transform duration-200 group-focus-within:-translate-y-1 group-focus-within:scale-95">
+            Email Address
+          </label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:scale-[1.01] transition-all duration-200 placeholder:grey-400 bg-white/90"
+            placeholder="you@example.com"
+            required
+          />
+        </div>
 
         <button
           type="submit"
-          className="w-full bg-[#D4C9BE] text-black py-2 rounded-md hover:bg-[#c0b5a9] transition"
+          className="w-full bg-[#D4C9BE] text-black py-3 rounded-md hover:bg-[#c0b5a9] hover:scale-105 hover:ring-2 hover:ring-[#D4C9BE]/50 hover:ring-offset-2 active:scale-95 transition-all duration-300 text-base"
         >
           Proceed to Send OTP
         </button>
