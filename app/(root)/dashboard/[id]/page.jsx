@@ -14,6 +14,7 @@ export default function TripDashboard() {
   const [totalUsers, setTotalUsers] = useState([]);
   const [myTasksOnly, setMyTasksOnly] = useState(false);
   const statusOptions = ["To Pack", "Packed", "Delivered"];
+  const [tripDe, setTripDetails] = useState("");
   const [newItem, setNewItem] = useState({
     itemName: "",
     category: "",
@@ -37,10 +38,10 @@ export default function TripDashboard() {
       } else {
         console.warn("No user found in localStorage");
       }
-
+      await tripDetails();
       await fetchUsers();
       await fetchItems();
-
+      
       // Simulated data
       setItems([
         { itemName: "Tent", user: "Alice" },
@@ -235,6 +236,23 @@ export default function TripDashboard() {
       // const updated = displayedTasks.filter((_, i) => i !== index);
     };
 
+    const tripDetails = async() => {
+      try {
+        const res = await fetch(`/api/trips/getById?id=${id}`);
+        const data = await res.json();
+    
+        if (data.success) {
+          console.log('Fetched trip:', data.data);
+          setTripDetails(data.data);
+        } else {
+          console.error('Trip fetch failed:', data.message);
+          return null;
+        }
+      } catch (error) {
+        console.error('Error fetching trip:', error);
+        return null;
+      }
+    }
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] relative overflow-hidden p-6">
       {/* Background Circles */}
@@ -246,7 +264,7 @@ export default function TripDashboard() {
       {/* Main Content */}
       <div className="relative z-10 max-w-3xl mx-auto bg-gradient-to-br from-[#1E293B]/90 via-[#1E203A]/90 to-[#1E293B]/90 backdrop-blur-lg rounded-xl shadow-md border border-[#334155]/50 hover:border-[#6366F1]/70 transition-all duration-500 hover:shadow-[0_10px_30px_-5px_rgba(99,102,241,0.3)] p-6 space-y-6">
         <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
-          Trip/Event Dashboard - {id}
+          Trip/Event Dashboard - {tripDe ? tripDe?.name : id}
         </h1>
         <p className="text-transparent bg-clip-text bg-gradient-to-r from-[#64748B] via-[#94A3B8] to-[#64748B] text-sm animate-text-pulse">
           Manage your trip tasks and collaborators
@@ -324,7 +342,7 @@ export default function TripDashboard() {
                     </td>
                     <td className="p-2 text-center">
                       <div className="flex justify-center gap-2">
-                      {(task.userRole === "Admin" || task.userRole === "Owner") && (
+                      {(tripDe.owner == currentUser) && (
                         <button
                           onClick={() => editTask(index)}
                           className="text-blue-500"
@@ -332,7 +350,7 @@ export default function TripDashboard() {
                           <Pencil size={18} />
                         </button>
                         )}
-                        {(task.userRole === "Admin" || task.userRole === "Owner") && (
+                        {(tripDe.owner == currentUser) && (
                         <button
                           onClick={() => deleteTask(index)}
                           className="text-red-500"
