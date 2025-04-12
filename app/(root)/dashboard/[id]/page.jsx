@@ -1,5 +1,5 @@
 "use client";
-
+import { Pencil, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Select from "react-select";
@@ -12,6 +12,7 @@ export default function TripDashboard() {
   const [people, setPeople] = useState([]);
   const [totalUsers, setTotalUsers] = useState([]);
   const [myTasksOnly, setMyTasksOnly] = useState(false);
+  const statusOptions = ["To Pack", "Packed", "Delivered"];
   const [newItem, setNewItem] = useState({
     itemName: "",
     category: "",
@@ -137,7 +138,7 @@ export default function TripDashboard() {
         role: newPerson.role,
         tripId: id,
       };
-  
+
       try {
         // const res = await fetch("/api/trips/add-person", {
         //   method: "POST",
@@ -146,7 +147,6 @@ export default function TripDashboard() {
         //   },
         //   body: JSON.stringify(payload),
         // });
-  
         // const data = await res.json();
         // if (res.ok && data.success) {
         //   console.log("Person added:", data);
@@ -157,25 +157,91 @@ export default function TripDashboard() {
       } catch (err) {
         console.error("Error calling API:", err);
       }
-  
+
       setNewPerson({ name: "", role: "" });
       setIsPeopleModalOpen(false);
     }
   };
-  
-  const deleteTask = (index) => {
-    const updated = [...tasks];
-    updated.splice(index, 1);
-    setTasks(updated);
-  };
+
+  // const deleteTask = (index) => {
+  //   const updated = [...tasks];
+  //   updated.splice(index, 1);
+  //   setTasks(updated);
+  // };
 
   const toggleMyTasks = () => setMyTasksOnly((prev) => !prev);
 
-  const displayedTasks = myTasksOnly
+  var displayedTasks = myTasksOnly
     ? tasks.filter(
         (task) => String(task.assignedTo?.id) === String(currentUser)
       )
     : tasks;
+
+
+    const updateTaskAssignee = async (index, newUserId) => {
+      const taskToUpdate = displayedTasks[index];
+      
+      try {
+        const res = await fetch(`/api/items/update-assigne`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ itemId: taskToUpdate._id,
+            assignedTo: newUserId }),
+        });
+    
+        const data = await res.json();
+        console.log("Response data:", data);
+        
+        if (res.ok) {
+          console.log("Assignee updated:", data.item);
+          await fetchItems(); 
+        } else {
+          console.error("Error updating assignee:", data.message);
+        }
+      } catch (err) {
+        console.error("API call error:", err);
+      }
+    };
+    
+    const updateTaskStatus = async (index, newStatus) => {
+      const taskToUpdate = displayedTasks[index];
+    
+      try {
+        const res = await fetch("/api/items/update-status", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            itemId: taskToUpdate._id,
+            status: newStatus,
+          }),
+        });
+    
+        const data = await res.json();
+    
+        if (res.ok) {
+          console.log("Status updated:", data.item);
+          await fetchItems(); // Refresh tasks from DB
+        } else {
+          console.error("Error updating task status:", data.message);
+        }
+      } catch (err) {
+        console.error("API call error:", err);
+      }
+    };
+    
+    
+    const editTask = (index) => {
+      // Open modal or inline edit logic
+    };
+    
+    const deleteTask = (index) => {
+      // const updated = displayedTasks.filter((_, i) => i !== index);
+    };
+
   return (
     <div className="min-h-screen p-6 bg-gray-100">
       <div className="max-w-3xl mx-auto bg-white rounded-lg shadow p-6 space-y-6">
@@ -205,33 +271,77 @@ export default function TripDashboard() {
 
         {/* Collaborative Tasks */}
         <div>
-          <h2 className="text-xl font-semibold mb-2">Collaborative Tasks</h2>
-          <ul className="space-y-2">
-            {displayedTasks.map((task, index) => (
-              <li
-                key={index}
-                className="border p-2 rounded-md flex justify-between items-center"
-              >
-                <span>
-                  {task.name} —{" "}
-                  <strong>
-                    {Array.isArray(task.assignedTo)
-                      ? task.assignedTo.map((user) => user.username).join(", ")
-                      : typeof task.assignedTo === "object" &&
-                        task.assignedTo !== null
-                      ? task.assignedTo.username
-                      : task.assignedTo || "Unassigned"}
-                  </strong>
-                </span>
-                <button
-                  onClick={() => deleteTask(index)}
-                  className="text-red-500"
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
+          <h2 className="text-xl font-semibold mb-4">Collaborative Tasks</h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto border border-gray-300 rounded-md">
+              <thead className="bg-gray-100 text-left">
+                <tr>
+                  <th className="p-2 border-b">Task Name</th>
+                  <th className="p-2 border-b">Assigned To</th>
+                  <th className="p-2 border-b">Status</th>
+                  <th className="p-2 border-b text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {displayedTasks.map((task, index) => (
+                  <tr key={index} className="border-t">
+                    <td className="p-2">{task.name}</td>
+                    <td className="p-2">
+                      <select
+                        value={task.assignedTo?.id || ""}
+                        onChange={(e) =>
+                          updateTaskAssignee(index, e.target.value)
+                        }
+                        className="border border-gray-300 rounded px-2 py-1 text-sm w-full"
+                      >
+                        <option value="">Unassigned</option>
+                        {totalUsers.map((user) => (
+                          <option key={user._id} value={user._id}>
+                            {user.username}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="p-2">
+                      <select
+                        value={task.status || "To Pack"}
+                        onChange={(e) =>
+                          updateTaskStatus(index, e.target.value)
+                        }
+                        className="border border-gray-300 rounded px-2 py-1 text-sm"
+                      >
+                        {statusOptions.map((status) => (
+                          <option key={status} value={status}>
+                            {status}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="p-2 text-center">
+                      <div className="flex justify-center gap-2">
+                      {(task.userRole === "Admin" || task.userRole === "Owner") && (
+                        <button
+                          onClick={() => editTask(index)}
+                          className="text-blue-500"
+                        >
+                          <Pencil size={18} />
+                        </button>
+                        )}
+                        {(task.userRole === "Admin" || task.userRole === "Owner") && (
+                        <button
+                          onClick={() => deleteTask(index)}
+                          className="text-red-500"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -325,7 +435,7 @@ export default function TripDashboard() {
               placeholder="Search Assigned Username"
               className="mb-4 text-amber-700"
             />
-            
+
             <input
               value={newPerson.role}
               onChange={(e) =>

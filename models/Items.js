@@ -4,7 +4,7 @@ const itemSchema = new mongoose.Schema({
   name: String,
   category: String,
   status: { type: String, enum: ['To Pack', 'Packed', 'Delivered'], default: 'To Pack' },
-  assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
   userRole : { type: String, enum: ['Owner', 'Admin', 'Member', 'Viewer'], default: 'Member' },
   tripId: { type: mongoose.Schema.Types.ObjectId, ref: 'Trip' }
 });

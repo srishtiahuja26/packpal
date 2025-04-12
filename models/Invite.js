@@ -4,7 +4,7 @@ const inviteSchema = new mongoose.Schema({
   tripId: { type: mongoose.Schema.Types.ObjectId, ref: 'Trip' },
   email: String,
   role: { type: String, enum: ['Admin', 'Member', 'Viewer'], default: 'Member' },
-  invitedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  invitedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
   status: { type: String, enum: ['Pending', 'Accepted', 'Declined'], default: 'Pending' },
   createdAt: { type: Date, default: Date.now }
 });
