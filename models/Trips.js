@@ -6,6 +6,8 @@ const tripSchema = new mongoose.Schema({
   type: String,
   startDate: Date,
   endDate: Date,
+  destination : String,
+  items : Array,
   owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   members: [
     {

@@ -1,5 +1,5 @@
 "use client"
-
+import {  useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { Mountain, Calendar, MapPin, PenTool, ChevronDown, Sparkles, ArrowRight } from "lucide-react"
 
@@ -12,9 +12,9 @@ export default function CreateTrip() {
   const [categoryOpen, setCategoryOpen] = useState(false)
   const [selectedType, setSelectedType] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("")
-
+  const router = useRouter()
   const typeOptions = ["a", "b", "c", "d", "f"]
-  const categoryOptions = ["a", "b", "c", "d"]
+  const categoryOptions = ["Trip", "Event"]
 
   // Update end date when start date changes
   useEffect(() => {
@@ -41,19 +41,49 @@ export default function CreateTrip() {
     }
   }
 
-  const handleCreateTrip = (e) => {
-    e.preventDefault()
-    // Handle form submission logic here
-    console.log({
-      tripName,
-      startDate,
-      endDate,
-      destination,
+  const handleCreateTrip = async (e) => {
+    e.preventDefault();
+  
+    // Get user ID from localStorage
+    const userData = JSON.parse(localStorage.getItem("user"));
+    const userId = userData?._id;
+  
+    if (!userId) {
+      alert("User not found. Please log in again.");
+      return;
+    }
+  
+    const newTrip = {
+      name : tripName,
+        startDate: startDate,
+        endDate: endDate,
+        owner: userId,
+        members: [],
+      destination :destination,
       type: selectedType,
       category: selectedCategory,
-    })
-    alert("Trip created successfully!")
-  }
+    };
+  
+    try {
+      const res = await fetch("/api/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newTrip),
+      });
+      const data = await res.json();
+      if (res.status && data.success) {
+        alert("Trip created successfully!");
+        console.log(data)
+        router.push(`/dashboard/${data.trip._id}`);
+        // Optionally clear form or redirect
+      } else {
+        alert("Failed to create trip.");
+      }
+    } catch (error) {
+      console.error("Error creating trip:", error);
+    }
+  };
+  
 
   const handleAIGenerate = () => {
     // AI generation logic would go here

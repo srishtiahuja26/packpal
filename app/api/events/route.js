@@ -38,7 +38,7 @@ export async function POST(req) {
     await dbConnect();
 
     const body = await req.json();
-    const newTrip = await Trip.create(body);
+    const newTrip = await Trips.create(body);
 
     return NextResponse.json({ success: true, trip: newTrip });
   } catch (error) {
