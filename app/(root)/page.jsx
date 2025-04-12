@@ -1,11 +1,24 @@
 'use client';
 
 import { ArrowRight, Mountain, Menu, X } from 'lucide-react';
-import { useState } from 'react';
+// import { useState } from 'react';
 import {  useRouter } from "next/navigation"
+import { useState, useEffect } from 'react';
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter()
+
+    // Check if the user is logged in from localStorage
+    useEffect(() => {
+      const user = localStorage.getItem('user'); // Assuming you store the user in localStorage
+      if (user) {
+        // Redirect to the dashboard if user is already logged in
+        router.push('/dashboard');
+      }
+    }, [router]);
+  
+
+
   return (
     <main className="relative min-h-screen">
       {/* Navigation */}

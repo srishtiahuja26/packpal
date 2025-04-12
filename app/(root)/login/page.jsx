@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/button";
 import { Input } from "@/components/input";
 import { Mail, Lock } from "lucide-react";
@@ -11,6 +11,14 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  // Check if the user is already logged in
+  useEffect(() => {
+    const user = localStorage.getItem('user'); // Assuming you store user data in localStorage
+    if (user) {
+      router.push('/dashboard'); // Redirect to dashboard if user is already logged in
+    }
+  }, [router]);
 
   const handleLogin = async () => {
     const res = await fetch('/api/auth/login', {

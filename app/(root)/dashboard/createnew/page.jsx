@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Mountain, Calendar, MapPin, PenTool, ChevronDown, Sparkles, ArrowRight } from "lucide-react"
 
 export default function CreateTrip() {
+  const router = useRouter();
   const [tripName, setTripName] = useState("")
   const [startDate, setStartDate] = useState("")
   const [endDate, setEndDate] = useState("")
@@ -12,12 +13,15 @@ export default function CreateTrip() {
   const [categoryOpen, setCategoryOpen] = useState(false)
   const [selectedType, setSelectedType] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("")
-  const router = useRouter()
   const typeOptions = ["a", "b", "c", "d", "f"]
   const categoryOptions = ["Trip", "Event"]
 
   // Update end date when start date changes
   useEffect(() => {
+    const user = localStorage.getItem('user'); // Assuming you store user data in localStorage
+      if (!user) {
+        router.push('/signup'); // Redirect to dashboard if user is already logged in
+      }
     if (startDate) {
       setEndDate(startDate) // Set end date to start date by default
     }
@@ -85,9 +89,26 @@ export default function CreateTrip() {
   };
   
 
-  const handleAIGenerate = () => {
-    // AI generation logic would go here
-    alert("AI is generating trip suggestions...")
+  const handleAIGenerate = async () => {
+    // const res = await fetch('/api/ai/generate-packing-list', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({
+    //   startDate,
+    //   endDate,
+    //   destination,
+    //   selectedType,
+    //   selectedCategory,
+    //   }),
+    // });
+  
+    // const data = await res.json();
+    // if (data.success) {
+    //   console.log('AI Suggestions:', data);
+    //   // setSuggestedItems(data.items);
+    // } else {
+    //   alert('Failed to generate list');
+    // }
   }
 
   return (

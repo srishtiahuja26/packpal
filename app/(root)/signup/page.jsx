@@ -1,12 +1,20 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function SignUp() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Check if the user is already logged in
+    useEffect(() => {
+      const user = localStorage.getItem('user'); // Assuming you store user data in localStorage
+      if (user) {
+        router.push('/dashboard'); // Redirect to dashboard if user is already logged in
+      }
+    }, [router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

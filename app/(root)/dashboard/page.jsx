@@ -3,15 +3,22 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { ArrowRight, Mountain, Calendar, MapPin, Plus, Compass } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function Dashboard() {
+  const router = useRouter();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+        // const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (!user){
+        router.push('/signup');
+        return;
+      }
 
         if (!user) {
           setTimeout(() => {
