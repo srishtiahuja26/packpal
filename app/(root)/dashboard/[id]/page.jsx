@@ -27,6 +27,9 @@ export default function TripDashboard() {
   useEffect(() => {
     (async () => {
       const storedUser = await localStorage.getItem("user");
+      if(!storedUser){
+        router.push('/'); // Redirect to dashboard if user is already logged in
+      }
       if (storedUser) {
         try {
           const current = JSON.parse(storedUser);

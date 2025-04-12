@@ -16,7 +16,7 @@ export default function Dashboard() {
         // const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
       const user = JSON.parse(localStorage.getItem('user'));
       if (!user){
-        router.push('/signup');
+        router.push('/');
         return;
       }
 

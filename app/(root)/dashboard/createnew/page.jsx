@@ -20,7 +20,7 @@ export default function CreateTrip() {
   useEffect(() => {
     const user = localStorage.getItem('user'); // Assuming you store user data in localStorage
       if (!user) {
-        router.push('/signup'); // Redirect to dashboard if user is already logged in
+        router.push('/'); // Redirect to dashboard if user is already logged in
       }
     if (startDate) {
       setEndDate(startDate) // Set end date to start date by default
