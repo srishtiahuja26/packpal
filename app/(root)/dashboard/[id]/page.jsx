@@ -312,6 +312,7 @@ export default function TripDashboard() {
                     <td className="p-2">
                       <select
                         value={task.assignedTo?.id || ""}
+                        disabled = {(tripDe.owner != currentUser)}
                         onChange={(e) =>
                           updateTaskAssignee(index, e.target.value)
                         }
@@ -328,6 +329,7 @@ export default function TripDashboard() {
                     <td className="p-2">
                       <select
                         value={task.status || "To Pack"}
+                        disabled={String(task?.assignedTo?.id) != String(currentUser)}
                         onChange={(e) =>
                           updateTaskStatus(index, e.target.value)
                         }

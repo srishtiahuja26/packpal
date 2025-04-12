@@ -30,7 +30,7 @@ export default function Login() {
     const data = await res.json();
 
     if (data.success) {
-      localStorage.setItem('user',data.user);
+      localStorage.setItem('user',JSON.stringify(data.user));
       router.push('/dashboard'); // Redirect if login is successful
     } else {
       setError(data.error || 'Login failed');
