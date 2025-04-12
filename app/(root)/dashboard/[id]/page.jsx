@@ -3,6 +3,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Select from "react-select";
+
 export default function TripDashboard() {
   const { id } = useParams();
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
@@ -20,8 +21,8 @@ export default function TripDashboard() {
     userRole: "",
   });
   const [newPerson, setNewPerson] = useState({ name: "", role: "" });
-
   const [currentUser, setCurrentUser] = useState("");
+
   useEffect(() => {
     (async () => {
       const storedUser = await localStorage.getItem("user");
@@ -29,7 +30,7 @@ export default function TripDashboard() {
         try {
           const current = JSON.parse(storedUser);
           setCurrentUser(current._id);
-          console.log("Current User:", current._id); // use current._id directly
+          console.log("Current User:", current._id);
         } catch (error) {
           console.error("Failed to parse user from localStorage:", error);
         }
@@ -40,7 +41,7 @@ export default function TripDashboard() {
       await fetchUsers();
       await fetchItems();
 
-      // Simulated data (optional for initial mock state)
+      // Simulated data
       setItems([
         { itemName: "Tent", user: "Alice" },
         { itemName: "Water Bottles", user: "Bob" },
@@ -51,11 +52,11 @@ export default function TripDashboard() {
       ]);
     })();
   }, [id]);
+
   const fetchItems = async () => {
     try {
       const res = await fetch(`/api/items/${id}`);
       if (!res.ok) throw new Error("Failed to fetch items");
-
       const data = await res.json();
       console.log("Fetched items:", data);
       setTasks(data.items);
@@ -63,9 +64,9 @@ export default function TripDashboard() {
       console.error("Error fetching items:", err);
     }
   };
+
   const fetchUsers = async () => {
     try {
-      //id
       const response = await fetch("/api/users", {
         method: "GET",
         headers: {
@@ -84,18 +85,11 @@ export default function TripDashboard() {
   };
 
   const addItem = async () => {
-    if (
-      newItem.itemName &&
-      newItem.user &&
-      newItem.category &&
-      newItem.userRole
-    ) {
+    if (newItem.itemName && newItem.user && newItem.category && newItem.userRole) {
       const itemExists = items.some(
-        (item) =>
-          item.itemName === newItem.itemName && item.user === newItem.user
+        (item) => item.itemName === newItem.itemName && item.user === newItem.user
       );
       if (!itemExists) {
-        // setItems([...items, newItem]);
         var payload = {
           name: newItem.itemName,
           category: newItem.category,
@@ -113,7 +107,6 @@ export default function TripDashboard() {
             body: JSON.stringify(payload),
           });
           const data = await res.json();
-
           if (res.ok) {
             console.log("Item added:", data);
             await fetchItems();
@@ -243,27 +236,39 @@ export default function TripDashboard() {
     };
 
   return (
-    <div className="min-h-screen p-6 bg-gray-100">
-      <div className="max-w-3xl mx-auto bg-white rounded-lg shadow p-6 space-y-6">
-        <h1 className="text-2xl font-bold">Trip/Event Dashboard - {id}</h1>
+    <div className="min-h-screen bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] relative overflow-hidden p-6">
+      {/* Background Circles */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-80 h-80 rounded-full bg-gradient-to-r from-purple-600/20 to-blue-600/20 blur-3xl animate-float1"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-gradient-to-r from-indigo-600/20 to-violet-600/20 blur-3xl animate-float2"></div>
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 max-w-3xl mx-auto bg-gradient-to-br from-[#1E293B]/90 via-[#1E203A]/90 to-[#1E293B]/90 backdrop-blur-lg rounded-xl shadow-md border border-[#334155]/50 hover:border-[#6366F1]/70 transition-all duration-500 hover:shadow-[0_10px_30px_-5px_rgba(99,102,241,0.3)] p-6 space-y-6">
+        <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+          Trip/Event Dashboard - {id}
+        </h1>
+        <p className="text-transparent bg-clip-text bg-gradient-to-r from-[#64748B] via-[#94A3B8] to-[#64748B] text-sm animate-text-pulse">
+          Manage your trip tasks and collaborators
+        </p>
 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-4">
           <button
             onClick={() => setIsItemModalOpen(true)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md"
+            className="bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#8B5CF6] text-white px-4 py-2 rounded-xl hover:from-[#4338CA] hover:via-[#5B5EF0] hover:to-[#7E4DF0] transition-all duration-500 shadow-lg hover:shadow-xl hover:shadow-[#6366F1]/30"
           >
             Add Item
           </button>
           <button
             onClick={() => setIsPeopleModalOpen(true)}
-            className="bg-purple-500 text-white px-4 py-2 rounded-md"
+            className="bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#8B5CF6] text-white px-4 py-2 rounded-xl hover:from-[#4338CA] hover:via-[#5B5EF0] hover:to-[#7E4DF0] transition-all duration-500 shadow-lg hover:shadow-xl hover:shadow-[#6366F1]/30"
           >
             Add People
           </button>
           <button
             onClick={toggleMyTasks}
-            className="bg-green-500 text-white px-4 py-2 rounded-md"
+            className="bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#8B5CF6] text-white px-4 py-2 rounded-xl hover:from-[#4338CA] hover:via-[#5B5EF0] hover:to-[#7E4DF0] transition-all duration-500 shadow-lg hover:shadow-xl hover:shadow-[#6366F1]/30"
           >
             {myTasksOnly ? "View All Tasks" : "My Tasks"}
           </button>
@@ -342,6 +347,7 @@ export default function TripDashboard() {
               </tbody>
             </table>
           </div>
+         
         </div>
       </div>
 
@@ -349,25 +355,23 @@ export default function TripDashboard() {
       {isItemModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
           <div
-            className="bg-white p-6 rounded-lg w-[400px]"
+            className="bg-gradient-to-br from-[#1E293B]/90 via-[#1E203A]/90 to-[#1E293B]/90 backdrop-blur-lg p-6 rounded-xl border border-[#334155]/50 w-[400px]"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-xl font-bold mb-4 text-amber-800">Add Item</h2>
+            <h2 className="text-xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+              Add Item
+            </h2>
             <input
               value={newItem.itemName}
-              onChange={(e) =>
-                setNewItem({ ...newItem, itemName: e.target.value })
-              }
+              onChange={(e) => setNewItem({ ...newItem, itemName: e.target.value })}
               placeholder="Item Name"
-              className="mb-2 w-full p-2 border rounded text-zinc-950"
+              className="mb-2 w-full p-2 bg-gradient-to-b from-[#1E293B] to-[#1E203A] text-[#CBD5E1] border border-[#334155] rounded-xl focus:outline-none focus:border-[#818CF8] focus:ring-2 focus:ring-[#818CF8]/50 placeholder:text-[#64748B]"
             />
             <input
               value={newItem.category}
-              onChange={(e) =>
-                setNewItem({ ...newItem, category: e.target.value })
-              }
-              placeholder="category Name"
-              className="mb-2 w-full p-2 border rounded text-amber-700"
+              onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
+              placeholder="Category Name"
+              className="mb-2 w-full p-2 bg-gradient-to-b from-[#1E293B] to-[#1E203A] text-[#CBD5E1] border border-[#334155] rounded-xl focus:outline-none focus:border-[#818CF8] focus:ring-2 focus:ring-[#818CF8]/50 placeholder:text-[#64748B]"
             />
             <Select
               options={totalUsers.map((p) => ({
@@ -383,26 +387,50 @@ export default function TripDashboard() {
                 setNewItem({ ...newItem, user: selected?.value || "" });
               }}
               placeholder="Search Assigned Username"
-              className="mb-4 text-amber-700"
+              className="mb-4 text-[#CBD5E1]"
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  background: 'linear-gradient(to bottom, #1E293B, #1E203A)',
+                  borderColor: '#334155',
+                  borderRadius: '0.75rem',
+                  color: '#CBD5E1',
+                }),
+                singleValue: (base) => ({
+                  ...base,
+                  color: '#CBD5E1',
+                }),
+                placeholder: (base) => ({
+                  ...base,
+                  color: '#64748B',
+                }),
+                menu: (base) => ({
+                  ...base,
+                  background: '#1E293B',
+                }),
+                option: (base, { isFocused }) => ({
+                  ...base,
+                  background: isFocused ? '#334155' : '#1E293B',
+                  color: '#CBD5E1',
+                }),
+              }}
             />
             <input
               value={newItem.userRole}
-              onChange={(e) =>
-                setNewItem({ ...newItem, userRole: e.target.value })
-              }
+              onChange={(e) => setNewItem({ ...newItem, userRole: e.target.value })}
               placeholder="Assigned Role"
-              className="mb-4 w-full p-2 border rounded text-amber-700"
+              className="mb-4 w-full p-2 bg-gradient-to-b from-[#1E293B] to-[#1E203A] text-[#CBD5E1] border border-[#334155] rounded-xl focus:outline-none focus:border-[#818CF8] focus:ring-2 focus:ring-[#818CF8]/50 placeholder:text-[#64748B]"
             />
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setIsItemModalOpen(false)}
-                className="text-gray-500"
+                className="text-[#64748B] hover:text-[#818CF8] transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={addItem}
-                className="bg-blue-500 text-white px-4 py-1 rounded"
+                className="bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#8B5CF6] text-white px-4 py-1 rounded-xl hover:from-[#4338CA] hover:via-[#5B5EF0] hover:to-[#7E4DF0] transition-all duration-500"
               >
                 Add
               </button>
@@ -415,10 +443,12 @@ export default function TripDashboard() {
       {isPeopleModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex justify-center items-center z-50">
           <div
-            className="bg-white p-6 rounded-lg w-[400px]"
+            className="bg-gradient-to-br from-[#1E293B]/90 via-[#1E203A]/90 to-[#1E293B]/90 backdrop-blur-lg p-6 rounded-xl border border-[#334155]/50 w-[400px]"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-xl font-bold mb-4">Add Person</h2>
+            <h2 className="text-xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+              Add Person
+            </h2>
             <Select
               options={totalUsers.map((p) => ({
                 label: p.username,
@@ -430,30 +460,53 @@ export default function TripDashboard() {
                   .find((option) => option.value === newPerson.name) || null
               }
               onChange={(selected) => {
-                setNewPerson({ ...newItem, name: selected?.value || "" });
+                setNewPerson({ ...newPerson, name: selected?.value || "" });
               }}
               placeholder="Search Assigned Username"
-              className="mb-4 text-amber-700"
+              className="mb-4 text-[#CBD5E1]"
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  background: 'linear-gradient(to bottom, #1E293B, #1E203A)',
+                  borderColor: '#334155',
+                  borderRadius: '0.75rem',
+                  color: '#CBD5E1',
+                }),
+                singleValue: (base) => ({
+                  ...base,
+                  color: '#CBD5E1',
+                }),
+                placeholder: (base) => ({
+                  ...base,
+                  color: '#64748B',
+                }),
+                menu: (base) => ({
+                  ...base,
+                  background: '#1E293B',
+                }),
+                option: (base, { isFocused }) => ({
+                  ...base,
+                  background: isFocused ? '#334155' : '#1E293B',
+                  color: '#CBD5E1',
+                }),
+              }}
             />
-
             <input
               value={newPerson.role}
-              onChange={(e) =>
-                setNewPerson({ ...newPerson, role: e.target.value })
-              }
+              onChange={(e) => setNewPerson({ ...newPerson, role: e.target.value })}
               placeholder="Role"
-              className="mb-4 w-full p-2 border rounded"
+              className="mb-4 w-full p-2 bg-gradient-to-b from-[#1E293B] to-[#1E203A] text-[#CBD5E1] border border-[#334155] rounded-xl focus:outline-none focus:border-[#818CF8] focus:ring-2 focus:ring-[#818CF8]/50 placeholder:text-[#64748B]"
             />
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setIsPeopleModalOpen(false)}
-                className="text-gray-500"
+                className="text-[#64748B] hover:text-[#818CF8] transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={addPerson}
-                className="bg-purple-500 text-white px-4 py-1 rounded"
+                className="bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#8B5CF6] text-white px-4 py-1 rounded-xl hover:from-[#4338CA] hover:via-[#5B5EF0] hover:to-[#7E4DF0] transition-all duration-500"
               >
                 Add
               </button>
@@ -461,6 +514,25 @@ export default function TripDashboard() {
           </div>
         </div>
       )}
+
+      {/* Animation Styles */}
+      <style jsx global>{`
+        @keyframes float1 {
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          50% { transform: translate(-30px, -20px) rotate(3deg); }
+        }
+        @keyframes float2 {
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          50% { transform: translate(25px, 25px) rotate(-3deg); }
+        }
+        @keyframes text-pulse {
+          0%, 100% { opacity: 0.8; }
+          50% { opacity: 1; }
+        }
+        .animate-float1 { animation: float1 18s ease-in-out infinite; }
+        .animate-float2 { animation: float2 20s ease-in-out infinite; }
+        .animate-text-pulse { animation: text-pulse 3s ease-in-out infinite; }
+      `}</style>
     </div>
   );
 }
