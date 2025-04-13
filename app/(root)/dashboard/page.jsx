@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -16,14 +16,14 @@ export default function Dashboard() {
   const router = useRouter();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        // const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
-        const user = JSON.parse(localStorage.getItem("user"));
+        const user = JSON.parse(localStorage.getItem('user'));
         if (!user) {
-          router.push("/");
+          router.push('/');
           return;
         }
 
@@ -42,7 +42,7 @@ export default function Dashboard() {
 
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching events:", error);
+        console.error('Error fetching events:', error);
         setEvents(dummyEvents);
         setLoading(false);
       }
@@ -62,19 +62,18 @@ export default function Dashboard() {
       <header className="w-full p-6 flex items-center justify-between bg-gradient-to-br from-[#1E293B]/90 via-[#1E203A]/90 to-[#1E293B]/90 backdrop-blur-lg border-b border-[#334155]/50 relative z-10">
         <div className="flex items-center">
           <Mountain className="h-8 w-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 mr-2" />
-          <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
-            BackpackBuddy
-          </h1>
+          <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">BackpackBuddy</h1>
         </div>
         <div className="flex space-x-6">
-          <button className="px-4 py-2 text-[#CBD5E1] hover:text-[#818CF8] transition-colors">
-            Dashboard
-          </button>
-          <button className="px-4 py-2 text-[#CBD5E1] hover:text-[#818CF8] transition-colors">
-            My Trips
-          </button>
-          <button className="px-4 py-2 text-[#CBD5E1] hover:text-[#818CF8] transition-colors">
-            Profile
+          <button className="px-4 py-2 text-[#CBD5E1] hover:text-[#818CF8] transition-colors">Dashboard</button>
+          <button className="px-4 py-2 text-[#CBD5E1] hover:text-[#818CF8] transition-colors">My Trips</button>
+          <button className="px-4 py-2 text-[#CBD5E1] hover:text-[#818CF8] transition-colors">Profile</button>
+          {/* Circular Achievements Button */}
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="w-12 h-12 rounded-full bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#8B5CF6] flex items-center justify-center hover:from-[#4338CA] hover:via-[#5B5EF0] hover:to-[#7E4DF0] transition-all duration-500 shadow-lg hover:shadow-xl hover:shadow-[#6366F1]/30"
+          >
+            <Trophy className="h-6 w-6 text-white" />
           </button>
         </div>
       </header>
@@ -84,48 +83,28 @@ export default function Dashboard() {
           <div className="bg-gradient-to-br from-[#1E293B]/90 via-[#1E203A]/90 to-[#1E293B]/90 backdrop-blur-lg p-6 rounded-xl shadow-md border border-[#334155]/50 hover:border-[#6366F1]/70 transition-all duration-500 hover:shadow-[0_10px_30px_-5px_rgba(99,102,241,0.3)] transform hover:-translate-y-1">
             <div className="flex items-center mb-2">
               <Compass className="h-6 w-6 text-[#818CF8] mr-3" />
-              <h3 className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
-                Upcoming Trips
-              </h3>
+              <h3 className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">Upcoming Trips</h3>
             </div>
-            <p className="text-4xl font-bold text-[#CBD5E1]">{events?.length}</p>
+            <p className="text-4xl font-bold text-[#CBD5E1]">{events.length}</p>
           </div>
           <div className="bg-gradient-to-br from-[#1E293B]/90 via-[#1E203A]/90 to-[#1E293B]/90 backdrop-blur-lg p-6 rounded-xl shadow-md border border-[#334155]/50 hover:border-[#6366F1]/70 transition-all duration-500 hover:shadow-[0_10px_30px_-5px_rgba(99,102,241,0.3)] transform hover:-translate-y-1">
             <div className="flex items-center mb-2">
               <Calendar className="h-6 w-6 text-[#818CF8] mr-3" />
-              <h3 className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
-                Next Trip
-              </h3>
+              <h3 className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">Next Trip</h3>
             </div>
-            <p className="text-lg text-[#CBD5E1]">
-            {events && events[0]?.startDate
-                              ? new Date(events[0]?.startDate).toLocaleDateString(
-                                  "en-GB",
-                                  {
-                                    day: "2-digit",
-                                    month: "short",
-                                    year: "numeric",
-                                  }
-                                )
-                              : "No trips scheduled"}
-             
-            </p>
+            <p className="text-lg text-[#CBD5E1]">{events[0]?.date || 'No trips scheduled'}</p>
           </div>
           <div className="bg-gradient-to-br from-[#1E293B]/90 via-[#1E203A]/90 to-[#1E293B]/90 backdrop-blur-lg p-6 rounded-xl shadow-md border border-[#334155]/50 hover:border-[#6366F1]/70 transition-all duration-500 hover:shadow-[0_10px_30px_-5px_rgba(99,102,241,0.3)] transform hover:-translate-y-1">
             <div className="flex items-center mb-2">
               <MapPin className="h-6 w-6 text-[#818CF8] mr-3" />
-              <h3 className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
-                Popular Destination
-              </h3>
+              <h3 className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">Popular Destination</h3>
             </div>
-            <p className="text-lg">{events && events[0]?.destination || "Not available"}</p>
+            <p className="text-lg">{events[0]?.location || 'Not available'}</p>
           </div>
         </div>
 
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
-            Upcoming Trips and Events
-          </h2>
+          <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">Upcoming Trips and Events</h2>
           <Link href="/dashboard/createnew">
             <button className="bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#8B5CF6] hover:from-[#4338CA] hover:via-[#5B5EF0] hover:to-[#7E4DF0] text-white px-6 py-3 rounded-xl flex items-center shadow-lg hover:shadow-xl hover:shadow-[#6366F1]/30 transition-all duration-500">
               <Plus className="h-5 w-5 mr-2" />
@@ -137,28 +116,20 @@ export default function Dashboard() {
         {loading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="animate-pulse bg-gradient-to-br from-[#1E293B]/90 via-[#1E203A]/90 to-[#1E293B]/90 rounded-xl h-24 border border-[#334155]/50"
-              ></div>
+              <div key={i} className="animate-pulse bg-gradient-to-br from-[#1E293B]/90 via-[#1E203A]/90 to-[#1E293B]/90 rounded-xl h-24 border border-[#334155]/50"></div>
             ))}
           </div>
-        ) : events?.length > 0 ? (
+        ) : events.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {events.map((event) => (
-              <Link href={`/dashboard/${event._id}`} key={event._id}>
+              <Link href={`/trip/${event._id}`} key={event._id}>
                 <div className="bg-gradient-to-br from-[#1E293B]/90 via-[#1E203A]/90 to-[#1E293B]/90 backdrop-blur-lg p-4 rounded-xl shadow-md border border-[#334155]/50 hover:border-[#6366F1]/70 transition-all duration-500 hover:shadow-[0_10px_30px_-5px_rgba(99,102,241,0.3)] transform hover:-translate-y-1">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h3 className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
-                        {event.name}
-                      </h3>
+                      <h3 className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">{event.title}</h3>
                       <div className="mt-2 text-sm text-[#CBD5E1]">
                         <div className="flex items-center">
                           <Calendar className="h-4 w-4 mr-1 text-[#818CF8]" />
-                          <span>
-                            {event.startDate
-                              ? new Date(event.startDate).toLocaleDateString(
                                   "en-GB",
                                   {
                                     day: "2-digit",
@@ -183,7 +154,7 @@ export default function Dashboard() {
                         {event.destination && (
                           <div className="flex items-center mt-1">
                             <MapPin className="h-4 w-4 mr-1 text-[#818CF8]" />
-                            <span>{event.destination}</span>
+                            <span>{event.location}</span>
                           </div>
                         )}
                       </div>
@@ -198,13 +169,9 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="bg-gradient-to-br from-[#1E293B]/90 via-[#1E203A]/90 to-[#1E293B]/90 backdrop-blur-lg p-8 rounded-xl text-center border border-[#334155]/50 hover:border-[#6366F1]/70 transition-all duration-500 hover:shadow-[0_10px_30px_-5px_rgba(99,102,241,0.3)]">
-            <h3 className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 mb-2">
-              No upcoming trips
-            </h3>
-            <p className="text-[#CBD5E1] mb-4">
-              Start planning your next adventure!
-            </p>
-            <Link href="/dashboard/createnew">
+            <h3 className="text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 mb-2">No upcoming trips</h3>
+            <p className="text-[#CBD5E1] mb-4">Start planning your next adventure!</p>
+            <Link href="/create-trip">
               <button className="bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#8B5CF6] hover:from-[#4338CA] hover:via-[#5B5EF0] hover:to-[#7E4DF0] text-white px-6 py-3 rounded-xl flex items-center mx-auto transition-all duration-500 shadow-lg hover:shadow-xl hover:shadow-[#6366F1]/30">
                 <Plus className="h-5 w-5 mr-2" />
                 <span>Create Your First Trip</span>
@@ -218,9 +185,7 @@ export default function Dashboard() {
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center mb-4 md:mb-0">
             <Mountain className="h-6 w-6 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 mr-2" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 font-bold">
-              BackpackBuddy
-            </span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 font-bold">BackpackBuddy</span>
           </div>
           <div className="text-transparent bg-clip-text bg-gradient-to-r from-[#64748B] via-[#94A3B8] to-[#64748B] text-sm animate-text-pulse">
             © {new Date().getFullYear()} BackpackBuddy. All rights reserved.
@@ -228,43 +193,61 @@ export default function Dashboard() {
         </div>
       </footer>
 
+      {/* New Modal with Uploaded Image Layout */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setIsModalOpen(false)}>
+          <div
+            className="bg-gradient-to-br from-[#1E293B]/90 via-[#1E203A]/90 to-[#1E293B]/90 backdrop-blur-lg p-6 rounded-xl border-4 border-gradient-to-r from-[#4F46E5]/50 via-[#6366F1]/50 to-[#8B5CF6]/50 max-w-md w-full relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-4 right-4 text-[#CBD5E1] hover:text-[#818CF8] transition-colors"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 mb-2 text-center">
+              Daily Challenge
+            </h2>
+            <p className="text-[#CBD5E1] text-center mb-4">7h 16m remaining</p>
+            <p className="text-[#CBD5E1] text-center mb-6">Complete the tasks below to WIN REWARDS!</p>
+            <div className="flex flex-col space-y-4">
+              <div className="flex items-center justify-between bg-[#2A3448]/70 p-3 rounded-lg">
+                <div className="flex items-center">
+                  <div className="w-10 h-10 bg-[#4A6FA5] rounded-full flex items-center justify-center mr-3">
+                    <span className="text-white text-xl">⚡</span>
+                  </div>
+                  <div>
+                    <p className="text-[#CBD5E1]">Use 200 Energy</p>
+                    <p className="text-sm text-gray-400">0/200</p>
+                  </div>
+                </div>
+                <button className="bg-[#6B7280] text-white px-4 py-2 rounded-full hover:bg-[#4B5563] transition-colors">
+                  Claim
+                </button>
+              </div>
+              {/* Add more tasks as needed */}
+            </div>
+          </div>
+        </div>
+      )}
+
       <style jsx global>{`
         @keyframes float1 {
-          0%,
-          100% {
-            transform: translate(0, 0) rotate(0deg);
-          }
-          50% {
-            transform: translate(-30px, -20px) rotate(3deg);
-          }
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          50% { transform: translate(-30px, -20px) rotate(3deg); }
         }
         @keyframes float2 {
-          0%,
-          100% {
-            transform: translate(0, 0) rotate(0deg);
-          }
-          50% {
-            transform: translate(25px, 25px) rotate(-3deg);
-          }
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          50% { transform: translate(25px, 25px) rotate(-3deg); }
         }
         @keyframes text-pulse {
-          0%,
-          100% {
-            opacity: 0.8;
-          }
-          50% {
-            opacity: 1;
-          }
+          0%, 100% { opacity: 0.8; }
+          50% { opacity: 1; }
         }
-        .animate-float1 {
-          animation: float1 18s ease-in-out infinite;
-        }
-        .animate-float2 {
-          animation: float2 20s ease-in-out infinite;
-        }
-        .animate-text-pulse {
-          animation: text-pulse 3s ease-in-out infinite;
-        }
+        .animate-float1 { animation: float1 18s ease-in-out infinite; }
+        .animate-float2 { animation: float2 20s ease-in-out infinite; }
+        .animate-text-pulse { animation: text-pulse 3s ease-in-out infinite; }
       `}</style>
     </div>
   );
@@ -272,27 +255,24 @@ export default function Dashboard() {
 
 const dummyEvents = [
   {
-    _id: "TR1001",
-    title: "Rocky Mountain Expedition",
-    date: "May 15 - May 22, 2025",
-    location: "Colorado, USA",
-    description:
-      "Experience the majestic beauty of the Rocky Mountains with guided hiking tours.",
+    _id: 'TR1001',
+    title: 'Rocky Mountain Expedition',
+    date: 'May 15 - May 22, 2025',
+    location: 'Colorado, USA',
+    description: 'Experience the majestic beauty of the Rocky Mountains with guided hiking tours.'
   },
   {
-    _id: "TR1002",
-    title: "Coastal Paradise Getaway",
-    date: "June 10 - June 17, 2025",
-    location: "Bali, Indonesia",
-    description:
-      "Relax on pristine beaches and explore ancient temples in this tropical paradise.",
+    _id: 'TR1002',
+    title: 'Coastal Paradise Getaway',
+    date: 'June 10 - June 17, 2025',
+    location: 'Bali, Indonesia',
+    description: 'Relax on pristine beaches and explore ancient temples in this tropical paradise.'
   },
   {
-    _id: "TR1003",
-    title: "European Cultural Tour",
-    date: "July 5 - July 19, 2025",
-    location: "Paris, France",
-    description:
-      "Immerse yourself in European culture, art, and cuisine with guided tours.",
-  },
+    _id: 'TR1003',
+    title: 'European Cultural Tour',
+    date: 'July 5 - July 19, 2025',
+    location: 'Paris, France',
+    description: 'Immerse yourself in European culture, art, and cuisine with guided tours.'
+  }
 ];
