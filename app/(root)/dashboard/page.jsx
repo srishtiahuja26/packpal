@@ -8,7 +8,7 @@ import {
   Calendar,
   MapPin,
   Plus,
-  Compass,
+  Compass,Trophy,X
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -130,6 +130,9 @@ export default function Dashboard() {
                       <div className="mt-2 text-sm text-[#CBD5E1]">
                         <div className="flex items-center">
                           <Calendar className="h-4 w-4 mr-1 text-[#818CF8]" />
+                          <span>
+                          {event.startDate
+                              ? new Date(event.startDate).toLocaleDateString(
                                   "en-GB",
                                   {
                                     day: "2-digit",
@@ -154,7 +157,7 @@ export default function Dashboard() {
                         {event.destination && (
                           <div className="flex items-center mt-1">
                             <MapPin className="h-4 w-4 mr-1 text-[#818CF8]" />
-                            <span>{event.location}</span>
+                            <span>{event.destination}</span>
                           </div>
                         )}
                       </div>
