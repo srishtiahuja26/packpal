@@ -111,7 +111,7 @@ export default function Login() {
 
             <p className="text-center text-sm text-transparent bg-clip-text bg-gradient-to-r from-[#64748B] via-[#94A3B8] to-[#64748B] animate-text-pulse">
               Don't have an account?{" "}
-              <a href="#" className="font-medium text-[#818CF8] hover:text-[#A5B4FC] transition-colors">
+              <a href="/signup" className="font-medium text-[#818CF8] hover:text-[#A5B4FC] transition-colors">
                 Sign up now
               </a>
             </p>

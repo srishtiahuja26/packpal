@@ -203,14 +203,17 @@ export default function CreateTrip() {
           </h1>
         </div>
         <div className="flex space-x-4">
-          <button className="px-4 py-2 text-[#CBD5E1] hover:text-[#818CF8] transition-colors">
+          <button className="px-4 py-2 text-[#CBD5E1] hover:text-[#818CF8] transition-colors" onClick={()=>router.push('/dashboard')}>
             Dashboard
           </button>
-          <button className="px-4 py-2 text-[#CBD5E1] hover:text-[#818CF8] transition-colors">
+          <button className="px-4 py-2 text-[#CBD5E1] hover:text-[#818CF8] transition-colors" onClick={()=>router.push('/dashboard')}>
             My Trips
           </button>
-          <button className="px-4 py-2 text-[#CBD5E1] hover:text-[#818CF8] transition-colors">
-            Profile
+          <button className="px-4 py-2 text-[#CBD5E1] hover:text-[#818CF8] transition-colors" onClick={()=>{
+            localStorage.removeItem('user')
+            router.push('/signup')
+          }}>
+            Logout
           </button>
         </div>
       </header>

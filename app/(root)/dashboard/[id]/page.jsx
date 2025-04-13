@@ -1,73 +1,74 @@
-"use client";
-import { Pencil, Trash2 } from "lucide-react";
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
-import Select from "react-select";
-
+"use client"
+import { Trash2 } from "lucide-react"
+import { useState, useEffect } from "react"
+import { useParams ,useRouter} from "next/navigation"
+import Select from "react-select"
+import { Mountain} from 'lucide-react';
 export default function TripDashboard() {
-  const { id } = useParams();
-  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
-  const [isPeopleModalOpen, setIsPeopleModalOpen] = useState(false);
-  const [items, setItems] = useState([]);
-  const [tasks, setTasks] = useState([]);
-  const [people, setPeople] = useState([]);
-  const [totalUsers, setTotalUsers] = useState([]);
-  const [myTasksOnly, setMyTasksOnly] = useState(false);
-  const statusOptions = ["To Pack", "Packed", "Delivered"];
-  const [tripDe, setTripDetails] = useState("");
+  const { id } = useParams()
+  const router = useRouter()
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false)
+  const [isPeopleModalOpen, setIsPeopleModalOpen] = useState(false)
+  const [items, setItems] = useState([])
+  const [tasks, setTasks] = useState([])
+  const [people, setPeople] = useState([])
+  const [totalUsers, setTotalUsers] = useState([])
+  const [myTasksOnly, setMyTasksOnly] = useState(false)
+  const statusOptions = ["To Pack", "Packed", "Delivered"]
+  const [tripDe, setTripDetails] = useState("")
   const [newItem, setNewItem] = useState({
     itemName: "",
     category: "",
     user: "",
     userRole: "",
-  });
-  const [newPerson, setNewPerson] = useState({ name: "", role: "" });
-  const [currentUser, setCurrentUser] = useState("");
+  })
+  const [newPerson, setNewPerson] = useState({ name: "", role: "" })
+  const [currentUser, setCurrentUser] = useState("")
 
   useEffect(() => {
-    (async () => {
-      const storedUser = await localStorage.getItem("user");
-      if(!storedUser){
-        router.push('/'); // Redirect to dashboard if user is already logged in
+    ;(async () => {
+      const storedUser = await localStorage.getItem("user")
+      if (!storedUser) {
+        router.push("/") // Redirect to dashboard if user is already logged in
       }
       if (storedUser) {
         try {
-          const current = JSON.parse(storedUser);
-          setCurrentUser(current._id);
-          console.log("Current User:", current._id);
+          const current = JSON.parse(storedUser)
+          setCurrentUser(current._id)
+          console.log("Current User:", current._id)
         } catch (error) {
-          console.error("Failed to parse user from localStorage:", error);
+          console.error("Failed to parse user from localStorage:", error)
         }
       } else {
-        console.warn("No user found in localStorage");
+        console.warn("No user found in localStorage")
       }
-      await tripDetails();
-      await fetchUsers();
-      await fetchItems();
-      
+      await tripDetails()
+      await fetchUsers()
+      await fetchItems()
+
       // Simulated data
       setItems([
         { itemName: "Tent", user: "Alice" },
         { itemName: "Water Bottles", user: "Bob" },
-      ]);
+      ])
       setPeople([
         { name: "Alice", role: "Leader" },
         { name: "Bob", role: "Member" },
-      ]);
-    })();
-  }, [id]);
+      ])
+    })()
+  }, [id])
 
   const fetchItems = async () => {
     try {
-      const res = await fetch(`/api/items/${id}`);
-      if (!res.ok) throw new Error("Failed to fetch items");
-      const data = await res.json();
-      console.log("Fetched items:", data);
-      setTasks(data.items);
+      const res = await fetch(`/api/items/${id}`)
+      if (!res.ok) throw new Error("Failed to fetch items")
+      const data = await res.json()
+      console.log("Fetched items:", data)
+      setTasks(data.items)
     } catch (err) {
-      console.error("Error fetching items:", err);
+      console.error("Error fetching items:", err)
     }
-  };
+  }
 
   const fetchUsers = async () => {
     try {
@@ -76,23 +77,21 @@ export default function TripDashboard() {
         headers: {
           "Content-Type": "application/json",
         },
-      });
-      const data = await response.json();
+      })
+      const data = await response.json()
       if (data.success) {
-        setTotalUsers(data.users);
+        setTotalUsers(data.users)
       } else {
-        console.error("Failed to fetch users:", data.message);
+        console.error("Failed to fetch users:", data.message)
       }
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error("Error fetching users:", error)
     }
-  };
+  }
 
   const addItem = async () => {
     if (newItem.itemName && newItem.user && newItem.category && newItem.userRole) {
-      const itemExists = items.some(
-        (item) => item.itemName === newItem.itemName && item.user === newItem.user
-      );
+      const itemExists = items.some((item) => item.itemName === newItem.itemName && item.user === newItem.user)
       if (!itemExists) {
         var payload = {
           name: newItem.itemName,
@@ -100,7 +99,7 @@ export default function TripDashboard() {
           assignedTo: newItem.user,
           userRole: newItem.userRole,
           tripId: id,
-        };
+        }
 
         try {
           const res = await fetch("/api/items", {
@@ -109,24 +108,24 @@ export default function TripDashboard() {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(payload),
-          });
-          const data = await res.json();
+          })
+          const data = await res.json()
           if (res.ok) {
-            console.log("Item added:", data);
-            await fetchItems();
+            console.log("Item added:", data)
+            await fetchItems()
           } else {
-            console.error("Failed to add item:", data.message);
+            console.error("Failed to add item:", data.message)
           }
         } catch (e) {
-          console.error("Error adding item:", e);
+          console.error("Error adding item:", e)
         }
       } else {
-        alert("Item already exists for this user.");
+        alert("Item already exists for this user.")
       }
-      setNewItem({ itemName: "", user: "", userRole: "", category: "" });
-      setIsItemModalOpen(false);
+      setNewItem({ itemName: "", user: "", userRole: "", category: "" })
+      setIsItemModalOpen(false)
     }
-  };
+  }
 
   const addPerson = async () => {
     if (newPerson.name && newPerson.role) {
@@ -134,7 +133,7 @@ export default function TripDashboard() {
         userId: newPerson.name,
         role: newPerson.role,
         tripId: id,
-      };
+      }
 
       try {
         // const res = await fetch("/api/trips/add-person", {
@@ -152,13 +151,13 @@ export default function TripDashboard() {
         //   console.error("Failed to add person:", data.message);
         // }
       } catch (err) {
-        console.error("Error calling API:", err);
+        console.error("Error calling API:", err)
       }
 
-      setNewPerson({ name: "", role: "" });
-      setIsPeopleModalOpen(false);
+      setNewPerson({ name: "", role: "" })
+      setIsPeopleModalOpen(false)
     }
-  };
+  }
 
   // const deleteTask = (index) => {
   //   const updated = [...tasks];
@@ -166,96 +165,89 @@ export default function TripDashboard() {
   //   setTasks(updated);
   // };
 
-  const toggleMyTasks = () => setMyTasksOnly((prev) => !prev);
+  const toggleMyTasks = () => setMyTasksOnly((prev) => !prev)
 
-  var displayedTasks = myTasksOnly
-    ? tasks.filter(
-        (task) => String(task.assignedTo?.id) === String(currentUser)
-      )
-    : tasks;
+  var displayedTasks = myTasksOnly ? tasks.filter((task) => String(task.assignedTo?.id) === String(currentUser)) : tasks
 
+  const updateTaskAssignee = async (index, newUserId) => {
+    const taskToUpdate = displayedTasks[index]
 
-    const updateTaskAssignee = async (index, newUserId) => {
-      const taskToUpdate = displayedTasks[index];
-      
-      try {
-        const res = await fetch(`/api/items/update-assigne`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ itemId: taskToUpdate._id,
-            assignedTo: newUserId }),
-        });
-    
-        const data = await res.json();
-        console.log("Response data:", data);
-        
-        if (res.ok) {
-          console.log("Assignee updated:", data.item);
-          await fetchItems(); 
-        } else {
-          console.error("Error updating assignee:", data.message);
-        }
-      } catch (err) {
-        console.error("API call error:", err);
+    try {
+      const res = await fetch(`/api/items/update-assigne`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ itemId: taskToUpdate._id, assignedTo: newUserId }),
+      })
+
+      const data = await res.json()
+      console.log("Response data:", data)
+
+      if (res.ok) {
+        console.log("Assignee updated:", data.item)
+        await fetchItems()
+      } else {
+        console.error("Error updating assignee:", data.message)
       }
-    };
-    
-    const updateTaskStatus = async (index, newStatus) => {
-      const taskToUpdate = displayedTasks[index];
-    
-      try {
-        const res = await fetch("/api/items/update-status", {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            itemId: taskToUpdate._id,
-            status: newStatus,
-          }),
-        });
-    
-        const data = await res.json();
-    
-        if (res.ok) {
-          console.log("Status updated:", data.item);
-          await fetchItems(); // Refresh tasks from DB
-        } else {
-          console.error("Error updating task status:", data.message);
-        }
-      } catch (err) {
-        console.error("API call error:", err);
-      }
-    };
-    
-    
-    const editTask = (index) => {
-      // Open modal or inline edit logic
-    };
-    
-    const deleteTask = (index) => {
-      // const updated = displayedTasks.filter((_, i) => i !== index);
-    };
-
-    const tripDetails = async() => {
-      try {
-        const res = await fetch(`/api/trips/getById?id=${id}`);
-        const data = await res.json();
-    
-        if (data.success) {
-          console.log('Fetched trip:', data.data);
-          setTripDetails(data.data);
-        } else {
-          console.error('Trip fetch failed:', data.message);
-          return null;
-        }
-      } catch (error) {
-        console.error('Error fetching trip:', error);
-        return null;
-      }
+    } catch (err) {
+      console.error("API call error:", err)
     }
+  }
+
+  const updateTaskStatus = async (index, newStatus) => {
+    const taskToUpdate = displayedTasks[index]
+
+    try {
+      const res = await fetch("/api/items/update-status", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          itemId: taskToUpdate._id,
+          status: newStatus,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (res.ok) {
+        console.log("Status updated:", data.item)
+        await fetchItems() // Refresh tasks from DB
+      } else {
+        console.error("Error updating task status:", data.message)
+      }
+    } catch (err) {
+      console.error("API call error:", err)
+    }
+  }
+
+  const editTask = (index) => {
+    // Open modal or inline edit logic
+  }
+
+  const deleteTask = (index) => {
+    // const updated = displayedTasks.filter((_, i) => i !== index);
+  }
+
+  const tripDetails = async () => {
+    try {
+      const res = await fetch(`/api/trips/getById?id=${id}`)
+      const data = await res.json()
+
+      if (data.success) {
+        console.log("Fetched trip:", data.data)
+        setTripDetails(data.data)
+      } else {
+        console.error("Trip fetch failed:", data.message)
+        return null
+      }
+    } catch (error) {
+      console.error("Error fetching trip:", error)
+      return null
+    }
+  }
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] relative overflow-hidden p-6">
       {/* Background Circles */}
@@ -263,7 +255,28 @@ export default function TripDashboard() {
         <div className="absolute top-1/4 left-1/4 w-80 h-80 rounded-full bg-gradient-to-r from-purple-600/20 to-blue-600/20 blur-3xl animate-float1"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-gradient-to-r from-indigo-600/20 to-violet-600/20 blur-3xl animate-float2"></div>
       </div>
-
+    <header className="w-full p-4 flex items-center justify-between relative z-10">
+            <div className="flex items-center">
+              <Mountain className="h-8 w-8 text-[#CBD5E1] mr-2" />
+              <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+                BackpackBuddy
+              </h1>
+            </div>
+            <div className="flex space-x-4">
+              <button className="px-4 py-2 text-[#CBD5E1] hover:text-[#818CF8] transition-colors" onClick={()=>router.push('/dashboard')}>
+                Dashboard
+              </button>
+              <button className="px-4 py-2 text-[#CBD5E1] hover:text-[#818CF8] transition-colors" onClick={()=>router.push('/dashboard')}>
+                My Trips
+              </button>
+              <button className="px-4 py-2 text-[#CBD5E1] hover:text-[#818CF8] transition-colors" onClick={()=>{
+                localStorage.removeItem('user')
+                router.push('/signup')
+              }}>
+                Logout
+              </button>
+            </div>
+          </header>
       {/* Main Content */}
       <div className="relative z-10 max-w-3xl mx-auto bg-gradient-to-br from-[#1E293B]/90 via-[#1E203A]/90 to-[#1E293B]/90 backdrop-blur-lg rounded-xl shadow-md border border-[#334155]/50 hover:border-[#6366F1]/70 transition-all duration-500 hover:shadow-[0_10px_30px_-5px_rgba(99,102,241,0.3)] p-6 space-y-6">
         <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
@@ -299,78 +312,155 @@ export default function TripDashboard() {
         <div>
           <h2 className="text-xl font-semibold mb-4">Collaborative Tasks</h2>
           <div className="overflow-x-auto">
-            <table className="min-w-full table-auto border border-gray-300 rounded-md">
-              <thead className="bg-gray-100 text-left">
-                <tr>
-                  <th className="p-2 border-b">Task Name</th>
-                  <th className="p-2 border-b">Assigned To</th>
-                  <th className="p-2 border-b">Status</th>
-                  <th className="p-2 border-b text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {displayedTasks.map((task, index) => (
-                  <tr key={index} className="border-t">
-                    <td className="p-2">{task.name}</td>
-                    <td className="p-2">
-                      <select
-                        value={task.assignedTo?.id || ""}
-                        disabled = {(tripDe.owner != currentUser)}
-                        onChange={(e) =>
-                          updateTaskAssignee(index, e.target.value)
-                        }
-                        className="border border-gray-300 rounded px-2 py-1 text-sm w-full"
-                      >
-                        <option value="">Unassigned</option>
-                        {totalUsers.map((user) => (
-                          <option key={user._id} value={user._id}>
-                            {user.username}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="p-2">
-                      <select
-                        value={task.status || "To Pack"}
-                        disabled={String(task?.assignedTo?.id) != String(currentUser)}
-                        onChange={(e) =>
-                          updateTaskStatus(index, e.target.value)
-                        }
-                        className="border border-gray-300 rounded px-2 py-1 text-sm"
-                      >
-                        {statusOptions.map((status) => (
-                          <option key={status} value={status}>
-                            {status}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="p-2 text-center">
-                      <div className="flex justify-center gap-2">
-                      {/* {(tripDe.owner == currentUser) && (
-                        <button
-                          onClick={() => editTask(index)}
-                          className="text-blue-500"
-                        >
-                          <Pencil size={18} />
-                        </button>
-                        )} */}
-                        {(tripDe.owner == currentUser) && (
-                        <button
-                          onClick={() => deleteTask(index)}
-                          className="text-red-500"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {/* Group tasks by category */}
+            {(() => {
+              // Get unique categories
+              const categories = [...new Set(displayedTasks.map((task) => task.category))].filter(Boolean)
+
+              return categories.map((category) => (
+                <div key={category} className="mb-6">
+                  <h3 className="text-lg font-medium mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+                    {category}
+                  </h3>
+                  <table className="min-w-full table-auto border border-gray-300 rounded-md mb-4">
+                    <thead className="bg-gray-100 text-left">
+                      <tr>
+                        <th className="p-2 border-b">Task Name</th>
+                        <th className="p-2 border-b">Assigned To</th>
+                        <th className="p-2 border-b">Status</th>
+                        <th className="p-2 border-b text-center">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {displayedTasks
+                        .filter((task) => task.category === category)
+                        .map((task, index) => {
+                          // Find the actual index in the original array for actions
+                          const originalIndex = displayedTasks.findIndex((t) => t._id === task._id)
+                          return (
+                            <tr key={task._id || index} className="border-t">
+                              <td className="p-2">{task.name}</td>
+                              <td className="p-2">
+                                <select
+                                  value={task.assignedTo?.id || ""}
+                                  disabled={tripDe.owner != currentUser}
+                                  onChange={(e) => updateTaskAssignee(originalIndex, e.target.value)}
+                                  className="border border-gray-300 rounded px-2 py-1 text-sm w-full"
+                                >
+                                  <option value="">Unassigned</option>
+                                  {totalUsers.map((user) => (
+                                    <option key={user._id} value={user._id}>
+                                      {user.username}
+                                    </option>
+                                  ))}
+                                </select>
+                              </td>
+                              <td className="p-2">
+                                <select
+                                  value={task.status || "To Pack"}
+                                  disabled={String(task?.assignedTo?.id) != String(currentUser)}
+                                  onChange={(e) => updateTaskStatus(originalIndex, e.target.value)}
+                                  className="border border-gray-300 rounded px-2 py-1 text-sm"
+                                >
+                                  {statusOptions.map((status) => (
+                                    <option key={status} value={status}>
+                                      {status}
+                                    </option>
+                                  ))}
+                                </select>
+                              </td>
+                              <td className="p-2 text-center">
+                                <div className="flex justify-center gap-2">
+                                  {tripDe.owner == currentUser && (
+                                    <button onClick={() => deleteTask(originalIndex)} className="text-red-500">
+                                      <Trash2 size={18} />
+                                    </button>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                    </tbody>
+                  </table>
+                </div>
+              ))
+            })()}
+
+            {/* Handle items with no category */}
+            {displayedTasks.some((task) => !task.category) && (
+              <div className="mb-6">
+                <h3 className="text-lg font-medium mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+                  Uncategorized
+                </h3>
+                <table className="min-w-full table-auto border border-gray-300 rounded-md">
+                  <thead className="bg-gray-100 text-left">
+                    <tr>
+                      <th className="p-2 border-b">Task Name</th>
+                      <th className="p-2 border-b">Assigned To</th>
+                      <th className="p-2 border-b">Status</th>
+                      <th className="p-2 border-b text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {displayedTasks
+                      .filter((task) => !task.category)
+                      .map((task, index) => {
+                        // Find the actual index in the original array for actions
+                        const originalIndex = displayedTasks.findIndex((t) => t._id === task._id)
+                        return (
+                          <tr key={task._id || index} className="border-t">
+                            <td className="p-2">{task.name}</td>
+                            <td className="p-2">
+                              <select
+                                value={task.assignedTo?.id || ""}
+                                disabled={tripDe.owner != currentUser}
+                                onChange={(e) => updateTaskAssignee(originalIndex, e.target.value)}
+                                className="border border-gray-300 rounded px-2 py-1 text-sm w-full"
+                              >
+                                <option value="">Unassigned</option>
+                                {totalUsers.map((user) => (
+                                  <option key={user._id} value={user._id}>
+                                    {user.username}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td className="p-2">
+                              <select
+                                value={task.status || "To Pack"}
+                                disabled={String(task?.assignedTo?.id) != String(currentUser)}
+                                onChange={(e) => updateTaskStatus(originalIndex, e.target.value)}
+                                className="border border-gray-300 rounded px-2 py-1 text-sm"
+                              >
+                                {statusOptions.map((status) => (
+                                  <option key={status} value={status}>
+                                    {status}
+                                  </option>
+                                ))}
+                              </select>
+                            </td>
+                            <td className="p-2 text-center">
+                              <div className="flex justify-center gap-2">
+                                {tripDe.owner == currentUser && (
+                                  <button onClick={() => deleteTask(originalIndex)} className="text-red-500">
+                                    <Trash2 size={18} />
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {displayedTasks.length === 0 && (
+              <div className="text-center py-4 text-gray-500">No tasks found. Add some items to get started!</div>
+            )}
           </div>
-         
         </div>
       </div>
 
@@ -407,34 +497,34 @@ export default function TripDashboard() {
                   .find((option) => option.value === newItem.user) || null
               }
               onChange={(selected) => {
-                setNewItem({ ...newItem, user: selected?.value || "" });
+                setNewItem({ ...newItem, user: selected?.value || "" })
               }}
               placeholder="Search Assigned Username"
               className="mb-4 text-[#CBD5E1]"
               styles={{
                 control: (base) => ({
                   ...base,
-                  background: 'linear-gradient(to bottom, #1E293B, #1E203A)',
-                  borderColor: '#334155',
-                  borderRadius: '0.75rem',
-                  color: '#CBD5E1',
+                  background: "linear-gradient(to bottom, #1E293B, #1E203A)",
+                  borderColor: "#334155",
+                  borderRadius: "0.75rem",
+                  color: "#CBD5E1",
                 }),
                 singleValue: (base) => ({
                   ...base,
-                  color: '#CBD5E1',
+                  color: "#CBD5E1",
                 }),
                 placeholder: (base) => ({
                   ...base,
-                  color: '#64748B',
+                  color: "#64748B",
                 }),
                 menu: (base) => ({
                   ...base,
-                  background: '#1E293B',
+                  background: "#1E293B",
                 }),
                 option: (base, { isFocused }) => ({
                   ...base,
-                  background: isFocused ? '#334155' : '#1E293B',
-                  color: '#CBD5E1',
+                  background: isFocused ? "#334155" : "#1E293B",
+                  color: "#CBD5E1",
                 }),
               }}
             />
@@ -483,34 +573,34 @@ export default function TripDashboard() {
                   .find((option) => option.value === newPerson.name) || null
               }
               onChange={(selected) => {
-                setNewPerson({ ...newPerson, name: selected?.value || "" });
+                setNewPerson({ ...newPerson, name: selected?.value || "" })
               }}
               placeholder="Search Assigned Username"
               className="mb-4 text-[#CBD5E1]"
               styles={{
                 control: (base) => ({
                   ...base,
-                  background: 'linear-gradient(to bottom, #1E293B, #1E203A)',
-                  borderColor: '#334155',
-                  borderRadius: '0.75rem',
-                  color: '#CBD5E1',
+                  background: "linear-gradient(to bottom, #1E293B, #1E203A)",
+                  borderColor: "#334155",
+                  borderRadius: "0.75rem",
+                  color: "#CBD5E1",
                 }),
                 singleValue: (base) => ({
                   ...base,
-                  color: '#CBD5E1',
+                  color: "#CBD5E1",
                 }),
                 placeholder: (base) => ({
                   ...base,
-                  color: '#64748B',
+                  color: "#64748B",
                 }),
                 menu: (base) => ({
                   ...base,
-                  background: '#1E293B',
+                  background: "#1E293B",
                 }),
                 option: (base, { isFocused }) => ({
                   ...base,
-                  background: isFocused ? '#334155' : '#1E293B',
-                  color: '#CBD5E1',
+                  background: isFocused ? "#334155" : "#1E293B",
+                  color: "#CBD5E1",
                 }),
               }}
             />
@@ -557,5 +647,5 @@ export default function TripDashboard() {
         .animate-text-pulse { animation: text-pulse 3s ease-in-out infinite; }
       `}</style>
     </div>
-  );
+  )
 }
