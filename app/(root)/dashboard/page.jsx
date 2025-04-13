@@ -135,27 +135,40 @@ export default function Dashboard() {
 
   const [chartData, setChartData] = useState([]);
   useEffect(() => {
-    const fetchhh = async () => {
+    const fetchChartData = async () => {
       const user = JSON.parse(localStorage.getItem("user"));
-      console.log("user._id",user._id);
-      try{
+      console.log("user._id", user?._id);
+  
+      try {
         if (user && user._id) {
           const res = await fetch("/api/chart", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ userId: user._id }),
           });
-          const data = await res.json();
   
-          console.log("RESSS", data);
+          const rawData = await res.json();
+          console.log("Raw Data:", rawData);
+  
+          // Transform `grouped` data into recharts format
+          const statuses = ["to pack", "packed", "delivered"];
+          const transformed = statuses.map(status => ({
+            subject: capitalize(status),
+            A: rawData.grouped[status] || 0
+          }));
+  
+          setChartData(transformed);
+          console.log("Transformed Data:", transformed);
         }
-      }catch(e){
-        console.log(e)
+      } catch (e) {
+        console.error("Fetching chart data failed:", e);
       }
-     
     };
-    fetchhh();
+  
+    fetchChartData();
   }, []);
+  const capitalize = (str) => str.replace(/\b\w/g, c => c.toUpperCase());
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] relative overflow-hidden">
       {/* Animated gradient background elements */}
