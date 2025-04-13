@@ -17,6 +17,8 @@ export default function Dashboard() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const [isLoading, setIsLoading] = useState(false);
+  const [claimedAchievements, setClaimedAchievements] = useState([]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -51,6 +53,84 @@ export default function Dashboard() {
     fetchEvents();
   }, []);
 
+  const [achievements, setAchievements] = useState([]);
+
+
+  const fetchAchievements = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const tripId = localStorage.getItem("tripId");
+      console.log("Test ");
+      setIsLoading(true);
+      console.log(isLoading + " isLoading");
+      
+      const res = await fetch('/api/achievements');
+      const data = await res.json();
+      // const claimed = (data.userAchievements || [])
+      // .filter((ua) => ua.claimed)
+      // .map((ua) => ua.achievementId);
+      console.log("Achievements fetched:", data);
+      setAchievements(data.achievements); // Save to state;
+      // setClaimedAchievements(claimed); // Save claimed achievements to state
+    } catch (error) {
+      console.error("Error fetching achievements:", error);
+    } finally{
+      setIsLoading(false);
+    }
+
+  }
+  // const fetchClaimedAchievements = async () => {
+  //   const user = JSON.parse(localStorage.getItem("user"));
+  //   const tripId = localStorage.getItem("tripId");
+  
+  //   if (!user || !tripId) return;
+  
+  //   const res = await fetch(`/api/userAchievements?userId=${user._id}&tripId=${tripId}`);
+  //   const data = await res.json();
+  
+  //   const claimed = data.userAchievements
+  //     .filter((ua) => ua.claimed)
+  //     .map((ua) => ua.achievementId);
+  
+  //   setClaimedAchievements(claimed);
+  // };
+
+  const handleClaim = async (achievementId) => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const tripId = localStorage.getItem("tripId"); // Or however you're tracking current trip
+  
+      if (!user) {   //|| !tripId
+        console.warn("Missing user or trip ID");
+        return;
+      }
+  
+      const res = await fetch("/api/userAchievements", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user._id,
+          tripId,
+          achievementId,
+        }),
+      });
+  
+      const data = await res.json();
+  
+      if (res.ok) {
+        setClaimedAchievements((prev) => [...prev, achievementId]); // Update claimed achievements state
+        // Optionally refresh UI or disable the button
+      } else {
+        console.warn("Already claimed or error:", data.message);
+      }
+    } catch (error) {
+      console.error("Error claiming achievement:", error);
+    }
+  };
+  
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] relative overflow-hidden">
       {/* Animated gradient background elements */}
@@ -70,7 +150,10 @@ export default function Dashboard() {
           <button className="px-4 py-2 text-[#CBD5E1] hover:text-[#818CF8] transition-colors">Profile</button>
           {/* Circular Achievements Button */}
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => {
+              fetchAchievements();
+              setIsModalOpen(true)
+            }}
             className="w-12 h-12 rounded-full bg-gradient-to-r from-[#4F46E5] via-[#6366F1] to-[#8B5CF6] flex items-center justify-center hover:from-[#4338CA] hover:via-[#5B5EF0] hover:to-[#7E4DF0] transition-all duration-500 shadow-lg hover:shadow-xl hover:shadow-[#6366F1]/30"
           >
             <Trophy className="h-6 w-6 text-white" />
@@ -112,7 +195,7 @@ export default function Dashboard() {
             </button>
           </Link>
         </div>
-
+        {/* <button onClick={()=>fetchAchievements()}>ACIEVEMENTS</button> */}
         {loading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
@@ -183,7 +266,18 @@ export default function Dashboard() {
           </div>
         )}
       </main>
+      <div>
 
+
+      {/* <div className="grid grid-cols-2 gap-4 mt-4">
+        {achievements && achievements.map((achievement) => (
+          <div key={achievement._id} className="bg-gray-100 p-4 rounded-lg shadow">
+            <h3 className="font-bold text-lg">{achievement.title}</h3>
+            <div className="text-sm text-gray-600">{achievement.rewardValue}</div>
+          </div>
+        ))}
+      </div> */}
+    </div>
       <footer className="w-full p-6 mt-12 bg-gradient-to-br from-[#1E293B]/90 via-[#1E203A]/90 to-[#1E293B]/90 backdrop-blur-lg border-t border-[#334155]/50 relative z-10">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center mb-4 md:mb-0">
@@ -204,33 +298,56 @@ export default function Dashboard() {
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 text-[#CBD5E1] hover:text-[#818CF8] transition-colors"
+              onClick={() => {
+                setIsModalOpen(false)
+              }}
+              className="absolute top-4 right-4 text-[#CBD5E1] hover:text-[#818 CF8] transition-colors"
             >
               <X className="h-6 w-6" />
             </button>
             <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 mb-2 text-center">
-              Daily Challenge
+              Achievements
             </h2>
-            <p className="text-[#CBD5E1] text-center mb-4">7h 16m remaining</p>
-            <p className="text-[#CBD5E1] text-center mb-6">Complete the tasks below to WIN REWARDS!</p>
             <div className="flex flex-col space-y-4">
-              <div className="flex items-center justify-between bg-[#2A3448]/70 p-3 rounded-lg">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-[#4A6FA5] rounded-full flex items-center justify-center mr-3">
-                    <span className="text-white text-xl">⚡</span>
+            {isLoading ? (
+              <div className="text-center text-white">Loading achievements...</div>
+            ) : (
+              achievements?.map((achievement) => (
+                <div
+                  key={achievement._id}
+                  className="flex items-center justify-between bg-[#2A3448]/80 px-4 py-3 rounded-xl shadow-md"
+                >
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-[#4A6FA5] rounded-full flex items-center justify-center mr-3">
+                      <span className="text-white text-xl">🏆</span>
+                    </div>
+                    <div>
+                      <p className="text-[#CBD5E1] font-medium">{achievement.title}</p>
+                      <p className="text-sm text-gray-400">{achievement.rewardValue}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-[#CBD5E1]">Use 200 Energy</p>
-                    <p className="text-sm text-gray-400">0/200</p>
-                  </div>
-                </div>
-                <button className="bg-[#6B7280] text-white px-4 py-2 rounded-full hover:bg-[#4B5563] transition-colors">
-                  Claim
+                  {/* <button
+                    className="bg-[#6B7280] text-white px-4 py-1.5 rounded-full hover:bg-[#4B5563] transition-colors text-sm"
+                    onClick={() => handleClaim(achievement._id)}
+                  >
+                    Claim
+                  </button> */}
+                  <button
+                  className={`px-4 py-1.5 rounded-full text-sm transition-colors ${
+                    claimedAchievements.includes(achievement._id)
+                      ? "bg-green-600 text-white cursor-default"
+                      : "bg-[#6B7280] text-white hover:bg-[#4B5563]"
+                  }`}
+                  disabled={claimedAchievements.includes(achievement._id)}
+                  onClick={() => handleClaim(achievement._id)}
+                >
+                  {claimedAchievements.includes(achievement._id) ? "Claimed" : "Claim"}
                 </button>
-              </div>
-              {/* Add more tasks as needed */}
+                </div>
+              ))
+            )}
             </div>
+
           </div>
         </div>
       )}
